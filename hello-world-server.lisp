@@ -15,8 +15,8 @@
 (setf *acceptor* nil)
 
 (define-easy-handler (hello-world :uri "/hello")
-    ((state-variable :parameter-type 'string))
-  (let* ((bytes (read-from-string state-variable))
+    ((request :parameter-type 'string))
+  (let* ((bytes (read-from-string request))
          (octet-bytes (make-array (length bytes)
                                   :element-type '(unsigned-byte 8)
                                   :initial-contents bytes))
