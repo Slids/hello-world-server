@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package hello_world;
+
+message request {
+  optional string name = 1;
+}
+
+message response {
+  optional string response = 1;
+}
