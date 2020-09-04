@@ -16,19 +16,19 @@
 
 (define-easy-handler (hello-world :uri "/hello")
     ((request :parameter-type 'string))
-  (let* ((bytes (read-from-string request))
-         (octet-bytes (make-array (length bytes)
-                                  :element-type '(unsigned-byte 8)
-                                  :initial-contents bytes))
+  (let* ((bytes (flexi-streams:string-to-octets
+                 (cl-base64:base64-string-to-string request)))
          (my-message (cl-protobufs:deserialize-object-from-bytes
-                      'hwp:request octet-bytes))
+                      'hwp:request bytes))
          (my-response
            (hwp:make-response
             :response
             (if (hwp:request.has-name my-message)
                 (format nil "Hello ~a" (hwp:request.name my-message))
                 "Hello"))))
-    (format nil "~a" (cl-protobufs:serialize-object-to-bytes my-response))))
+    (cl-base64:string-to-base64-string
+     (flexi-streams:octets-to-string
+      (cl-protobufs:serialize-object-to-bytes my-response)))))
 
 (defun stop-server ()
   (when *acceptor*
