@@ -1,8 +1,11 @@
 (defpackage #:hello-world-server
   (:use #:cl
         #:hunchentoot)
+  (:export #:start-server
+           #:stop-server)
   (:local-nicknames
-   (#:hwp #:cl-protobufs.hello-world)))
+   (#:hwp #:cl-protobufs.hello-world)
+   (#:pu #:protobuf-utilities)))
 
 (in-package :hello-world-server)
 
@@ -16,19 +19,12 @@
 
 (define-easy-handler (hello-world :uri "/hello")
     ((request :parameter-type 'string))
-  (let* ((bytes (flexi-streams:string-to-octets
-                 (cl-base64:base64-string-to-string request)))
-         (my-message (cl-protobufs:deserialize-object-from-bytes
-                      'hwp:request bytes))
-         (my-response
-           (hwp:make-response
-            :response
-            (if (hwp:request.has-name my-message)
-                (format nil "Hello ~a" (hwp:request.name my-message))
-                "Hello"))))
-    (cl-base64:string-to-base64-string
-     (flexi-streams:octets-to-string
-      (cl-protobufs:serialize-object-to-bytes my-response)))))
+  (pu:with-deserialized-protos ((request . 'hwp:request))
+    (hwp:make-response
+     :response
+     (if (hwp:request.has-name request)
+         (format nil "Hello ~a" (hwp:request.name request))
+         "Hello"))))
 
 (defun stop-server ()
   (when *acceptor*

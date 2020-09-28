@@ -5,7 +5,8 @@
   :description      "CL-protobuf Hello World Server"
   :long-description "CL-protobuf Hello World Server"
   :defsystem-depends-on (:cl-protobufs)
-  :depends-on (:hunchentoot :flexi-streams :cl-base64)
+  :depends-on (:hunchentoot :flexi-streams
+               :cl-base64 :protobuf-utilities)
   :components
   ((:module "src"
     :serial t
