@@ -19,7 +19,7 @@
 
 (define-easy-handler (hello-world :uri "/hello")
     ((request :parameter-type 'string))
-  (pu:with-deserialized-protos ((request . 'hwp:request))
+  (pu:with-deserialized-protos-serializing-return ((request . 'hwp:request))
     (hwp:make-response
      :response
      (if (hwp:request.has-name request)
